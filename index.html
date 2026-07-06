@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planetario Austral — Explora el Universo</title>
+  <meta name="description" content="Planetario Austral: contenido educativo verificado (NASA/ESA), zona interactiva para niños y agenda de visitas." />
+
+  <!-- Tipografías: Space Grotesk (títulos), Inter (texto), Baloo 2 (sección Kids) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700&family=Baloo+2:wght@500;700;800&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Capas de estrellas de fondo (CSS puro, muy ligeras) -->
+  <div class="starfield" aria-hidden="true"></div>
+  <div class="starfield starfield--2" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       HEADER / NAVEGACIÓN
+       ============================================================ -->
+  <header class="header">
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="#inicio" class="nav__logo">✦ Planetario<span>Austral</span></a>
+
+      <button class="nav__toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav__menu" id="nav-menu">
+        <li><a href="#inicio" class="nav__link is-active">Inicio</a></li>
+        <li><a href="#educativo" class="nav__link">Educativo</a></li>
+        <li><a href="#kids" class="nav__link nav__link--kids">Kids</a></li>
+        <li><a href="#contacto" class="nav__link">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============================================================
+         SECCIÓN INICIO — Hero: buscador + bienvenida + universo interactivo
+         ============================================================ -->
+    <section id="inicio" class="hero">
+      <div class="hero__inner">
+
+        <!-- Columna izquierda: buscador + texto de bienvenida -->
+        <div class="hero__left">
+
+          <!-- Buscador de objetos celestes -->
+          <div class="search" role="search">
+            <label class="visually-hidden" for="search-input">Buscar cometas, planetas y estrellas</label>
+            <div class="search__box">
+              <span class="search__icon" aria-hidden="true">🔭</span>
+              <input
+                type="search"
+                id="search-input"
+                class="search__input"
+                placeholder="Busca cometas, planetas y estrellas…"
+                autocomplete="off"
+                aria-describedby="search-hint" />
+            </div>
+
+            <!-- Filtros por tipo de objeto -->
+            <div class="search__filters" role="group" aria-label="Filtrar por tipo">
+              <button class="search__filter is-active" data-filtro="todos">Todos</button>
+              <button class="search__filter" data-filtro="planeta">Planetas</button>
+              <button class="search__filter" data-filtro="estrella">Estrellas</button>
+              <button class="search__filter" data-filtro="cometa">Cometas</button>
+            </div>
+
+            <!-- Chips con las búsquedas más famosas -->
+            <p class="search__hint" id="search-hint">Búsquedas más famosas:</p>
+            <div class="search__chips" id="search-chips">
+              <!-- Se generan desde js/main.js con los objetos marcados como "famoso" -->
+            </div>
+
+            <!-- Resultados del buscador (dropdown) -->
+            <ul class="search__results" id="search-results" role="listbox" aria-label="Resultados de búsqueda"></ul>
+          </div>
+
+          <!-- Texto de bienvenida -->
+          <h1 class="hero__title">
+            Gracias por visitar<br />
+            <span class="grad-text">nuestro rincón del cosmos</span>
+          </h1>
+          <p class="hero__subtitle">
+            Bienvenido y bienvenida al Planetario Austral. Aquí el universo se acerca:
+            explora planetas, estrellas y cometas con datos reales de la
+            <strong>NASA</strong> y la <strong>ESA</strong>, aprende a tu ritmo
+            y agenda tu próxima visita bajo las estrellas.
+          </p>
+          <div class="hero__cta">
+            <a href="#educativo" class="btn btn--primario">Comenzar a aprender</a>
+            <a href="#contacto" class="btn btn--fantasma">Agendar visita</a>
+          </div>
+        </div>
+
+        <!-- Columna derecha: universo interactivo (NO se renderiza en móvil) -->
+        <div class="hero__right" id="universo-wrap">
+          <div class="universo" aria-label="Mapa interactivo de la Vía Láctea en miniatura">
+            <canvas id="universo-canvas"></canvas>
+
+            <!-- Tooltip que aparece al pasar el cursor sobre un objeto -->
+            <div class="universo__tooltip" id="universo-tooltip" role="tooltip" hidden>
+              <p class="universo__tooltip-nombre"></p>
+              <p class="universo__tooltip-texto"></p>
+              <button class="btn btn--mini" id="universo-tooltip-btn">Ver ficha ↗</button>
+            </div>
+
+            <div class="universo__controles">
+              <span class="universo__etiqueta">✦ Vía Láctea en miniatura — pasa el cursor y haz clic</span>
+              <button class="btn btn--mini" id="universo-aleatorio">🎲 Objeto aleatorio</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicador de scroll -->
+      <a href="#galeria" class="hero__scroll" aria-label="Bajar a la galería">
+        <span>Descubre más</span>
+        <span class="hero__scroll-flecha" aria-hidden="true">↓</span>
+      </a>
+    </section>
+
+    <!-- ============================================================
+         GALERÍA — transición automática cada 4 segundos exactos
+         Reemplaza cada bloque .galeria__placeholder por:
+         <img src="ruta/a/tu/imagen.jpg" alt="Descripción de la foto" />
+         ============================================================ -->
+    <section id="galeria" class="galeria reveal" aria-label="Galería de imágenes del planetario">
+      <div class="seccion__cabecera">
+        <p class="seccion__kicker">Nuestro espacio</p>
+        <h2 class="seccion__titulo">Así se vive el Planetario</h2>
+      </div>
+
+      <div class="galeria__marco" id="galeria-marco">
+        <!-- Slide 1 -->
+        <figure class="galeria__slide is-activa">
+          <div class="galeria__placeholder">
+            <span>📷</span>
+            <p>IMAGEN 1 — Domo principal</p>
+            <small>Reemplaza este bloque por tu &lt;img&gt;</small>
+          </div>
+          <figcaption>El domo de proyección, corazón del planetario</figcaption>
+        </figure>
+        <!-- Slide 2 -->
+        <figure class="galeria__slide">
+          <div class="galeria__placeholder">
+            <span>📷</span>
+            <p>IMAGEN 2 — Sala de exposiciones</p>
+            <small>Reemplaza este bloque por tu &lt;img&gt;</small>
+          </div>
+          <figcaption>Exposiciones interactivas para toda la familia</figcaption>
+        </figure>
+        <!-- Slide 3 -->
+        <figure class="galeria__slide">
+          <div class="galeria__placeholder">
+            <span>📷</span>
+            <p>IMAGEN 3 — Observación nocturna</p>
+            <small>Reemplaza este bloque por tu &lt;img&gt;</small>
+          </div>
+          <figcaption>Noches de observación con telescopios</figcaption>
+        </figure>
+        <!-- Slide 4 -->
+        <figure class="galeria__slide">
+          <div class="galeria__placeholder">
+            <span>📷</span>
+            <p>IMAGEN 4 — Zona Kids</p>
+            <small>Reemplaza este bloque por tu &lt;img&gt;</small>
+          </div>
+          <figcaption>La zona infantil, ciencia que se juega</figcaption>
+        </figure>
+
+        <!-- Puntos de navegación de la galería -->
+        <div class="galeria__puntos" id="galeria-puntos" role="tablist" aria-label="Seleccionar imagen"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN EDUCATIVO — módulos con datos verificados NASA / ESA
+         ============================================================ -->
+    <section id="educativo" class="educativo">
+      <div class="seccion__cabecera reveal">
+        <p class="seccion__kicker">Aprende con fuentes oficiales</p>
+        <h2 class="seccion__titulo">Centro Educativo</h2>
+        <p class="seccion__bajada">
+          Un recorrido progresivo por el universo. Todos los datos provienen de
+          fuentes oficiales: <a href="https://science.nasa.gov" target="_blank" rel="noopener">NASA Science</a> y
+          <a href="https://www.esa.int" target="_blank" rel="noopener">Agencia Espacial Europea (ESA)</a>.
+          Elige un módulo para comenzar.
+        </p>
+      </div>
+
+      <!-- Tarjetas de módulos: al hacer clic se abre el contenido correspondiente -->
+      <div class="modulos reveal" role="tablist" aria-label="Módulos educativos">
+        <button class="modulo-card is-activa" data-modulo="sistema-solar" role="tab" aria-selected="true">
+          <span class="modulo-card__icono" aria-hidden="true">🪐</span>
+          <span class="modulo-card__titulo">El Sistema Solar</span>
+          <span class="modulo-card__desc">8 planetas, 5 planetas enanos y una estrella</span>
+        </button>
+        <button class="modulo-card" data-modulo="sol" role="tab" aria-selected="false">
+          <span class="modulo-card__icono" aria-hidden="true">☀️</span>
+          <span class="modulo-card__titulo">El Sol</span>
+          <span class="modulo-card__desc">Nuestra estrella, en cifras</span>
+        </button>
+        <button class="modulo-card" data-modulo="estrellas" role="tab" aria-selected="false">
+          <span class="modulo-card__icono" aria-hidden="true">⭐</span>
+          <span class="modulo-card__titulo">Vida de las estrellas</span>
+          <span class="modulo-card__desc">De nube molecular a supernova</span>
+        </button>
+        <button class="modulo-card" data-modulo="galaxias" role="tab" aria-selected="false">
+          <span class="modulo-card__icono" aria-hidden="true">🌌</span>
+          <span class="modulo-card__titulo">Galaxias</span>
+          <span class="modulo-card__desc">Espirales, elípticas e irregulares</span>
+        </button>
+        <button class="modulo-card" data-modulo="cometas" role="tab" aria-selected="false">
+          <span class="modulo-card__icono" aria-hidden="true">☄️</span>
+          <span class="modulo-card__titulo">Cometas</span>
+          <span class="modulo-card__desc">Bolas de nieve cósmicas</span>
+        </button>
+        <button class="modulo-card" data-modulo="agujeros" role="tab" aria-selected="false">
+          <span class="modulo-card__icono" aria-hidden="true">🕳️</span>
+          <span class="modulo-card__titulo">Agujeros negros</span>
+          <span class="modulo-card__desc">Donde ni la luz escapa</span>
+        </button>
+      </div>
+
+      <!-- ==================== Módulo: Sistema Solar ==================== -->
+      <article class="modulo-panel is-activa" id="modulo-sistema-solar" role="tabpanel">
+        <h3>El Sistema Solar</h3>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 1 · Fundamentos</span>
+          <p>
+            Nuestro sistema solar nació hace unos <strong>4600 millones de años</strong> a partir de
+            una nube de polvo estelar que colapsó por su propia gravedad (NASA). Hoy está formado por
+            <strong>8 planetas</strong>, <strong>5 planetas enanos oficialmente reconocidos</strong>
+            (entre ellos Plutón), lunas, asteroides y cometas, todos orbitando alrededor del Sol.
+          </p>
+          <p>El orden de los planetas desde el Sol es:</p>
+          <ol class="lista-planetas">
+            <li>Mercurio</li><li>Venus</li><li>Tierra</li><li>Marte</li>
+            <li>Júpiter</li><li>Saturno</li><li>Urano</li><li>Neptuno</li>
+          </ol>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 2 · Profundización</span>
+          <p>La NASA clasifica los planetas en tres familias según su composición:</p>
+          <div class="tabla-scroll">
+            <table class="tabla-datos">
+              <caption class="visually-hidden">Clasificación de los planetas del sistema solar</caption>
+              <thead>
+                <tr><th scope="col">Familia</th><th scope="col">Planetas</th><th scope="col">Característica</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Terrestres (rocosos)</td>
+                  <td>Mercurio, Venus, Tierra, Marte</td>
+                  <td>Tienen superficies sólidas</td>
+                </tr>
+                <tr>
+                  <td>Gigantes gaseosos</td>
+                  <td>Júpiter, Saturno</td>
+                  <td>Sin superficie firme; gases en torno a un núcleo</td>
+                </tr>
+                <tr>
+                  <td>Gigantes helados</td>
+                  <td>Urano, Neptuno</td>
+                  <td>Similares a los gaseosos, ricos en hielos</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 3 · Dato experto</span>
+          <div class="dato-caja">
+            <p><strong>Récords planetarios (NASA):</strong></p>
+            <ul>
+              <li><strong>Mercurio</strong> es el planeta más pequeño y el más cercano al Sol; su año dura solo 88 días terrestres.</li>
+              <li><strong>Venus</strong> es el planeta más caliente del sistema solar, pese a no ser el más cercano al Sol.</li>
+              <li><strong>Júpiter</strong> es el más grande; en su atmósfera destaca la Gran Mancha Roja, una tormenta gigante.</li>
+              <li><strong>Saturno</strong> es el segundo más grande, famoso por su sistema de anillos.</li>
+              <li><strong>Urano</strong> gira "de lado": su eje está casi acostado sobre su órbita.</li>
+              <li><strong>Neptuno</strong> es el planeta más frío y el más lejano del Sol.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="fuente">Fuentes: NASA Science — Solar System (science.nasa.gov) · NASA Space Place</p>
+      </article>
+
+      <!-- ==================== Módulo: El Sol ==================== -->
+      <article class="modulo-panel" id="modulo-sol" role="tabpanel" hidden>
+        <h3>El Sol: nuestra estrella</h3>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 1 · Fundamentos</span>
+          <p>
+            El Sol es una bola incandescente de <strong>hidrógeno y helio</strong> de unos
+            <strong>4500 millones de años</strong>. Está a unos
+            <strong>150 millones de kilómetros</strong> de la Tierra y concentra el
+            <strong>99,8 % de toda la masa del sistema solar</strong> (NASA).
+          </p>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 2 · Profundización</span>
+          <div class="tabla-scroll">
+            <table class="tabla-datos">
+              <caption class="visually-hidden">Ficha técnica del Sol según la NASA</caption>
+              <tbody>
+                <tr><th scope="row">Diámetro</th><td>≈ 1,4 millones de km</td></tr>
+                <tr><th scope="row">Temperatura del núcleo</th><td>≈ 15 millones °C</td></tr>
+                <tr><th scope="row">Temperatura de la superficie (fotosfera)</th><td>≈ 5500 °C</td></tr>
+                <tr><th scope="row">Temperatura de la corona</th><td>hasta 2 millones °C</td></tr>
+                <tr><th scope="row">Tierras que caben en su volumen</th><td>≈ 1,3 millones</td></tr>
+                <tr><th scope="row">Masa equivalente</th><td>más de 330 000 Tierras</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 3 · Dato experto</span>
+          <div class="dato-caja">
+            <p>
+              El Sol es una estrella de <strong>secuencia principal</strong>: fusiona hidrógeno en helio de
+              forma estable y se encuentra aproximadamente a la mitad de esa etapa. La NASA estima que le
+              quedan unos <strong>5000 millones de años</strong> antes de expandirse y terminar como una
+              <strong>enana blanca</strong>. Curiosamente, la corona (su atmósfera exterior) es cientos de
+              veces más caliente que la superficie, uno de los grandes enigmas de la física solar.
+            </p>
+          </div>
+        </div>
+        <p class="fuente">Fuente: NASA Science — Sun Facts (science.nasa.gov/sun/facts)</p>
+      </article>
+
+      <!-- ==================== Módulo: Estrellas ==================== -->
+      <article class="modulo-panel" id="modulo-estrellas" role="tabpanel" hidden>
+        <h3>La vida de las estrellas</h3>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 1 · Fundamentos</span>
+          <p>
+            Las estrellas nacen en enormes <strong>nubes moleculares</strong> de gas y polvo, que pueden
+            tener entre 1000 y 10 millones de veces la masa del Sol y extenderse cientos de años luz (NASA).
+            La gravedad comprime el gas hasta formar una <strong>protoestrella</strong>; cuando enciende la
+            fusión nuclear, nace una estrella. Las "guarderías estelares" producen estrellas en grupos
+            llamados <strong>cúmulos estelares</strong>.
+          </p>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 2 · Profundización</span>
+          <p>
+            La etapa más larga es la <strong>secuencia principal</strong>: la estrella fusiona hidrógeno en
+            helio de forma estable durante millones o miles de millones de años.
+            <strong>La masa lo decide todo</strong>: las estrellas pequeñas gastan su combustible despacio y
+            pueden brillar billones de años (más que la edad actual del universo), mientras que las más
+            masivas viven apenas unos millones de años.
+          </p>
+          <div class="tabla-scroll">
+            <table class="tabla-datos">
+              <caption class="visually-hidden">Destino final de las estrellas según su masa</caption>
+              <thead>
+                <tr><th scope="col">Tipo de estrella</th><th scope="col">Final de su vida</th><th scope="col">Remanente</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Baja masa (como el Sol)</td>
+                  <td>Se expande en gigante y expulsa sus capas: nebulosa planetaria</td>
+                  <td>Enana blanca (del tamaño de la Tierra)</td>
+                </tr>
+                <tr>
+                  <td>Alta masa</td>
+                  <td>Fusiona elementos cada vez más pesados hasta el hierro y explota en supernova</td>
+                  <td>Estrella de neutrones o agujero negro</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 3 · Dato experto</span>
+          <div class="dato-caja">
+            <p>
+              La NASA estima que el universo observable podría contener hasta
+              <strong>un septillón de estrellas</strong> (un 1 seguido de 24 ceros). Solo nuestra Vía Láctea
+              alberga <strong>más de 100 000 millones</strong>. Cuando una estrella masiva fusiona silicio en
+              hierro, la fusión deja de liberar energía: el núcleo colapsa y rebota en segundos, generando la
+              onda de choque de la supernova.
+            </p>
+          </div>
+        </div>
+        <p class="fuente">Fuente: NASA Science — Stars (science.nasa.gov/universe/stars)</p>
+      </article>
+
+      <!-- ==================== Módulo: Galaxias ==================== -->
+      <article class="modulo-panel" id="modulo-galaxias" role="tabpanel" hidden>
+        <h3>Galaxias: islas de estrellas</h3>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 1 · Fundamentos</span>
+          <p>
+            Las galaxias son gigantescos conjuntos de estrellas, gas, polvo y materia oscura unidos por la
+            gravedad. La NASA distingue tres formas principales: <strong>espirales</strong> (como la nuestra),
+            <strong>elípticas</strong> e <strong>irregulares</strong>.
+          </p>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 2 · Profundización</span>
+          <p>
+            Vivimos en la <strong>Vía Láctea</strong>, un disco de estrellas de
+            <strong>más de 100 000 años luz</strong> de diámetro. La Tierra se ubica en uno de sus brazos
+            espirales, aproximadamente a mitad de camino del centro. Nuestro sistema solar tarda unos
+            <strong>240 millones de años</strong> en completar una sola órbita alrededor de la galaxia.
+          </p>
+          <ul class="lista-datos">
+            <li>Las galaxias más pequeñas miden unos pocos cientos de años luz; las mayores superan el millón.</li>
+            <li>La mayoría tiene entre 10 000 y 13 600 millones de años de antigüedad.</li>
+            <li>La Vía Láctea pertenece al <strong>Grupo Local</strong>, un vecindario de más de 50 galaxias.</li>
+            <li><strong>Andrómeda</strong> es nuestra gran vecina galáctica más cercana.</li>
+          </ul>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 3 · Dato experto</span>
+          <div class="dato-caja">
+            <p>
+              La mayoría de las grandes galaxias esconde un <strong>agujero negro supermasivo</strong> en su
+              centro; algunos alcanzan miles de millones de veces la masa del Sol. El de la Vía Láctea se
+              llama <strong>Sagitario A*</strong> — conócelo en el módulo de agujeros negros.
+            </p>
+          </div>
+        </div>
+        <p class="fuente">Fuente: NASA Science — Galaxies (science.nasa.gov/universe/galaxies)</p>
+      </article>
+
+      <!-- ==================== Módulo: Cometas ==================== -->
+      <article class="modulo-panel" id="modulo-cometas" role="tabpanel" hidden>
+        <h3>Cometas: bolas de nieve cósmicas</h3>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 1 · Fundamentos</span>
+          <p>
+            La NASA los describe como <strong>"bolas de nieve cósmicas"</strong> de gases congelados, roca y
+            polvo que orbitan el Sol. Congelados, tienen el tamaño de un pueblo pequeño. Al acercarse al Sol
+            se calientan y liberan gas y polvo, formando una <strong>cola que se extiende millones de
+            kilómetros</strong>, siempre en dirección opuesta al Sol.
+          </p>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 2 · Profundización</span>
+          <p>
+            Provienen de dos regiones lejanas: el <strong>Cinturón de Kuiper</strong> (más allá de Neptuno) y
+            la remota <strong>Nube de Oort</strong>. Probablemente existen <strong>miles de millones</strong>
+            de cometas orbitando nuestro Sol.
+          </p>
+          <ul class="lista-datos">
+            <li><strong>1P/Halley</strong>: el cometa más famoso; visible desde la Tierra aproximadamente cada 76 años.</li>
+            <li><strong>67P/Churyumov-Gerasimenko</strong>: explorado por la misión <strong>Rosetta de la ESA</strong>, que en 2014 posó el módulo Philae sobre su superficie.</li>
+            <li><strong>C/1995 O1 (Hale-Bopp)</strong>: uno de los más brillantes del siglo XX.</li>
+          </ul>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 3 · Dato experto</span>
+          <div class="dato-caja">
+            <p>
+              No todos los cometas nacieron aquí: <strong>2I/Borisov</strong> y el reciente
+              <strong>3I/ATLAS</strong> son objetos <strong>interestelares</strong>, visitantes confirmados de
+              otros sistemas estelares (solo se han confirmado tres en la historia, junto a 'Oumuamua).
+              Además, los científicos investigan si los cometas pudieron traer parte del agua a la Tierra
+              primitiva.
+            </p>
+          </div>
+        </div>
+        <p class="fuente">Fuentes: NASA Science — Comets (science.nasa.gov/solar-system/comets) · ESA — misión Rosetta (esa.int)</p>
+      </article>
+
+      <!-- ==================== Módulo: Agujeros negros ==================== -->
+      <article class="modulo-panel" id="modulo-agujeros" role="tabpanel" hidden>
+        <h3>Agujeros negros</h3>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 1 · Fundamentos</span>
+          <p>
+            Un agujero negro es una región donde la gravedad es tan intensa que
+            <strong>nada — ni siquiera la luz — puede escapar</strong> una vez cruzado su límite, llamado
+            <strong>horizonte de sucesos</strong>. Los de masa estelar nacen cuando estrellas muy masivas
+            agotan su combustible y explotan como supernovas (NASA).
+          </p>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 2 · Profundización</span>
+          <p>La NASA distingue tres categorías según su masa:</p>
+          <div class="tabla-scroll">
+            <table class="tabla-datos">
+              <caption class="visually-hidden">Tipos de agujeros negros</caption>
+              <thead>
+                <tr><th scope="col">Tipo</th><th scope="col">Origen / ubicación</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>De masa estelar</td><td>Colapso de estrellas masivas tras una supernova</td></tr>
+                <tr><td>De masa intermedia</td><td>Eslabón entre los estelares y los supermasivos</td></tr>
+                <tr><td>Supermasivos</td><td>Centros de las galaxias; millones a miles de millones de masas solares</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            El de nuestra galaxia, <strong>Sagitario A*</strong>, tiene una masa de
+            <strong>4 millones de soles</strong>.
+          </p>
+        </div>
+
+        <div class="nivel">
+          <span class="nivel__tag">Nivel 3 · Dato experto</span>
+          <div class="dato-caja">
+            <p><strong>Récords documentados por la NASA:</strong></p>
+            <ul>
+              <li>El agujero negro conocido más cercano, <strong>Gaia BH1</strong>, está a 1500 años luz.</li>
+              <li>El más masivo observado, <strong>TON 618</strong>, alcanza 66 000 millones de masas solares.</li>
+              <li>El más ligero conocido tiene solo 3,8 masas solares.</li>
+              <li><strong>GRS 1915+105</strong> gira sobre sí mismo más de 1000 veces por segundo.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="fuente">Fuente: NASA Science — Black Holes (science.nasa.gov/universe/black-holes)</p>
+      </article>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN KIDS — colorida, con quiz, juegos y estrellas ganadas
+         ============================================================ -->
+    <section id="kids" class="kids">
+      <div class="kids__inner">
+        <div class="kids__cabecera reveal">
+          <p class="kids__kicker">🚀 Zona de peques</p>
+          <h2 class="kids__titulo">¡Kids al espacio!</h2>
+          <p class="kids__bajada">
+            Aprende, juega y gana estrellas. ¡Todo lo que un pequeño astronauta debe saber!
+          </p>
+          <!-- Marcador de estrellas ganadas (se guarda en tu navegador) -->
+          <div class="kids__marcador" aria-live="polite">
+            <span aria-hidden="true">⭐</span>
+            Estrellas ganadas: <strong id="kids-estrellas">0</strong>
+          </div>
+        </div>
+
+        <!-- Datos básicos que un niño debería saber (verificados, NASA Space Place) -->
+        <div class="kids__datos reveal">
+          <h3 class="kids__subtitulo">🌟 Lo que todo astronauta sabe</h3>
+          <div class="kids__tarjetas">
+            <div class="kids-tarjeta kids-tarjeta--rojo">
+              <span aria-hidden="true">🌍</span>
+              <h4>Vivimos en la Tierra</h4>
+              <p>Es el tercer planeta desde el Sol y el único con océanos azules. ¡Tiene una sola Luna!</p>
+            </div>
+            <div class="kids-tarjeta kids-tarjeta--amarillo">
+              <span aria-hidden="true">☀️</span>
+              <h4>El Sol es una estrella</h4>
+              <p>Una bola gigante de gas muy caliente. ¡Cabrían más de un millón de Tierras dentro!</p>
+            </div>
+            <div class="kids-tarjeta kids-tarjeta--azul">
+              <span aria-hidden="true">🪐</span>
+              <h4>Hay 8 planetas</h4>
+              <p>Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano y Neptuno. ¡En ese orden!</p>
+            </div>
+            <div class="kids-tarjeta kids-tarjeta--verde">
+              <span aria-hidden="true">☄️</span>
+              <h4>Los cometas son de hielo</h4>
+              <p>Son bolas de nieve espaciales. Cerca del Sol les crece una cola brillante enorme.</p>
+            </div>
+            <div class="kids-tarjeta kids-tarjeta--morado">
+              <span aria-hidden="true">🌌</span>
+              <h4>Vivimos en la Vía Láctea</h4>
+              <p>Nuestra galaxia tiene más de 100 000 millones de estrellas. ¡Imposible contarlas!</p>
+            </div>
+            <div class="kids-tarjeta kids-tarjeta--naranja">
+              <span aria-hidden="true">🔴</span>
+              <h4>Marte es el planeta rojo</h4>
+              <p>Se ve rojizo por su polvo. Los robots de la NASA lo exploran ahora mismo.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz interactivo con feedback inmediato -->
+        <div class="kids__bloque reveal" id="kids-quiz">
+          <h3 class="kids__subtitulo">🧠 Súper Quiz Espacial</h3>
+          <p class="kids__instruccion">Responde y gana una ⭐ por cada acierto.</p>
+          <div class="quiz" >
+            <p class="quiz__progreso" id="quiz-progreso">Pregunta 1</p>
+            <p class="quiz__pregunta" id="quiz-pregunta" aria-live="polite">…</p>
+            <div class="quiz__opciones" id="quiz-opciones"></div>
+            <p class="quiz__feedback" id="quiz-feedback" aria-live="assertive"></p>
+            <button class="btn-kids" id="quiz-siguiente" hidden>Siguiente pregunta →</button>
+          </div>
+        </div>
+
+        <!-- Juego de colorear -->
+        <div class="kids__bloque reveal" id="kids-colorear">
+          <h3 class="kids__subtitulo">🎨 Colorea el espacio</h3>
+          <p class="kids__instruccion">Elige un color y pinta el cohete con tu dedo o el mouse.</p>
+
+          <div class="colorear">
+            <!-- Paleta de colores seleccionable -->
+            <div class="colorear__paleta" id="colorear-paleta" role="group" aria-label="Paleta de colores">
+              <!-- Los botones de color se generan en js/kids.js -->
+            </div>
+
+            <!-- Dos lienzos apilados: abajo se pinta, arriba va el dibujo de líneas -->
+            <div class="colorear__lienzos">
+              <canvas id="colorear-pintura" width="640" height="440" aria-label="Lienzo para colorear"></canvas>
+              <canvas id="colorear-lineas" width="640" height="440" aria-hidden="true"></canvas>
+            </div>
+
+            <div class="colorear__acciones">
+              <label class="colorear__pincel">
+                Tamaño del pincel
+                <input type="range" id="colorear-tamano" min="4" max="40" value="16" />
+              </label>
+              <button class="btn-kids btn-kids--secundario" id="colorear-borrador">🧽 Borrador</button>
+              <button class="btn-kids btn-kids--secundario" id="colorear-limpiar">🗑️ Empezar de nuevo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Juego de selección de imágenes -->
+        <div class="kids__bloque reveal" id="kids-encuentra">
+          <h3 class="kids__subtitulo">🔎 ¡Encuéntralo!</h3>
+          <p class="kids__instruccion" id="encuentra-pregunta" aria-live="polite">¿Cuál de estas imágenes es un cometa?</p>
+
+          <!--
+            Marcos de imagen: reemplaza cada .encuentra__placeholder por tu <img>.
+            IMPORTANTE: conserva el atributo data-objeto de cada tarjeta
+            (cometa / planeta / estrella / galaxia); la lógica del juego lo usa.
+          -->
+          <div class="encuentra" id="encuentra-tablero">
+            <button class="encuentra__carta" data-objeto="cometa">
+              <div class="encuentra__placeholder">
+                <span aria-hidden="true">🖼️</span>
+                <p>TU IMAGEN AQUÍ<br /><small>(un cometa)</small></p>
+              </div>
+            </button>
+            <button class="encuentra__carta" data-objeto="planeta">
+              <div class="encuentra__placeholder">
+                <span aria-hidden="true">🖼️</span>
+                <p>TU IMAGEN AQUÍ<br /><small>(un planeta)</small></p>
+              </div>
+            </button>
+            <button class="encuentra__carta" data-objeto="estrella">
+              <div class="encuentra__placeholder">
+                <span aria-hidden="true">🖼️</span>
+                <p>TU IMAGEN AQUÍ<br /><small>(una estrella)</small></p>
+              </div>
+            </button>
+            <button class="encuentra__carta" data-objeto="galaxia">
+              <div class="encuentra__placeholder">
+                <span aria-hidden="true">🖼️</span>
+                <p>TU IMAGEN AQUÍ<br /><small>(una galaxia)</small></p>
+              </div>
+            </button>
+          </div>
+          <p class="quiz__feedback" id="encuentra-feedback" aria-live="assertive"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN CONTACTO — agenda con calendario + ubicación
+         ============================================================ -->
+    <section id="contacto" class="contacto">
+      <div class="seccion__cabecera reveal">
+        <p class="seccion__kicker">Te esperamos</p>
+        <h2 class="seccion__titulo">Agenda tu visita</h2>
+        <p class="seccion__bajada">Elige fecha y hora, déjanos tus datos y nos vemos bajo el domo.</p>
+      </div>
+
+      <div class="contacto__grid reveal">
+        <!-- Formulario de agendamiento -->
+        <form class="agenda" id="agenda-form" novalidate>
+          <h3 class="agenda__titulo">1 · Elige el día</h3>
+
+          <!-- Calendario visual construido a mano en js/contacto.js -->
+          <div class="calendario" id="calendario">
+            <div class="calendario__cabecera">
+              <button type="button" class="calendario__nav" id="cal-prev" aria-label="Mes anterior">‹</button>
+              <p class="calendario__mes" id="cal-mes" aria-live="polite">Mes</p>
+              <button type="button" class="calendario__nav" id="cal-next" aria-label="Mes siguiente">›</button>
+            </div>
+            <div class="calendario__dias-semana" aria-hidden="true">
+              <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span><span>Do</span>
+            </div>
+            <div class="calendario__grid" id="cal-grid"></div>
+          </div>
+
+          <h3 class="agenda__titulo">2 · Elige la hora</h3>
+          <div class="agenda__horas" id="agenda-horas" role="group" aria-label="Horarios disponibles">
+            <!-- Botones de horario generados en js/contacto.js -->
+          </div>
+
+          <h3 class="agenda__titulo">3 · Tus datos</h3>
+          <div class="agenda__campos">
+            <label>
+              Nombre completo
+              <input type="text" id="agenda-nombre" name="nombre" required autocomplete="name" placeholder="Ej: Violeta Parra" />
+            </label>
+            <label>
+              Correo electrónico
+              <input type="email" id="agenda-email" name="email" required autocomplete="email" placeholder="tu@correo.com" />
+            </label>
+            <label>
+              Teléfono (opcional)
+              <input type="tel" id="agenda-telefono" name="telefono" autocomplete="tel" placeholder="+56 9 1234 5678" />
+            </label>
+            <label>
+              N° de visitantes
+              <input type="number" id="agenda-personas" name="personas" min="1" max="40" value="2" required />
+            </label>
+          </div>
+
+          <!-- Resumen dinámico de la reserva -->
+          <p class="agenda__resumen" id="agenda-resumen" aria-live="polite">
+            Selecciona un día y una hora para ver el resumen de tu reserva.
+          </p>
+
+          <button type="submit" class="btn btn--primario agenda__enviar">Confirmar reserva ✦</button>
+          <p class="agenda__ok" id="agenda-ok" hidden></p>
+        </form>
+
+        <!-- Información de ubicación -->
+        <aside class="ubicacion">
+          <h3 class="agenda__titulo">¿Dónde estamos?</h3>
+          <address class="ubicacion__direccion">
+            <strong>Planetario Austral</strong><br />
+            Av. de las Estrellas 1234, Cerro Mirador<br />
+            Santiago, Chile<br />
+            <a href="tel:+56221234567">+56 2 2123 4567</a><br />
+            <a href="mailto:hola@planetarioaustral.cl">hola@planetarioaustral.cl</a>
+          </address>
+
+          <ul class="ubicacion__horarios">
+            <li><strong>Mar a Vie:</strong> 10:00 – 18:00</li>
+            <li><strong>Sáb y Dom:</strong> 10:00 – 20:00</li>
+            <li><strong>Lunes:</strong> cerrado</li>
+          </ul>
+
+          <!--
+            PLACEHOLDER DE GOOGLE MAPS
+            Reemplaza este div por tu iframe de Google Maps. Ejemplo:
+            <iframe
+              src="https://www.google.com/maps/embed?pb=TU_CODIGO_EMBED"
+              width="100%" height="300" style="border:0;" allowfullscreen=""
+              loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+              title="Mapa de ubicación del Planetario Austral"></iframe>
+          -->
+          <div class="ubicacion__mapa" role="img" aria-label="Mapa de ubicación (pendiente)">
+            <span aria-hidden="true">🗺️</span>
+            <p>MAPA DE GOOGLE MAPS AQUÍ</p>
+            <small>Pega tu iframe de Google Maps en este bloque</small>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer">
+    <p>✦ Planetario Austral — hecho con amor por el cosmos.</p>
+    <p class="footer__fuentes">
+      Contenido educativo basado en fuentes oficiales:
+      <a href="https://science.nasa.gov" target="_blank" rel="noopener">NASA Science</a> ·
+      <a href="https://spaceplace.nasa.gov" target="_blank" rel="noopener">NASA Space Place</a> ·
+      <a href="https://www.esa.int" target="_blank" rel="noopener">ESA</a>
+    </p>
+  </footer>
+
+  <!-- ============================================================
+       MODAL de ficha de objeto (universo interactivo + buscador)
+       ============================================================ -->
+  <div class="modal" id="modal-objeto" role="dialog" aria-modal="true" aria-labelledby="modal-titulo" hidden>
+    <div class="modal__fondo" data-cerrar-modal></div>
+    <div class="modal__caja">
+      <button class="modal__cerrar" data-cerrar-modal aria-label="Cerrar ventana">✕</button>
+      <span class="modal__icono" id="modal-icono" aria-hidden="true">✦</span>
+      <span class="modal__tipo" id="modal-tipo">Objeto</span>
+      <h3 class="modal__titulo" id="modal-titulo">Nombre</h3>
+      <p class="modal__resumen" id="modal-resumen">Resumen…</p>
+      <p class="modal__fuente" id="modal-fuente">Fuente: NASA</p>
+    </div>
+  </div>
+
+  <!-- Scripts, organizados por responsabilidad -->
+  <script src="js/data.js"></script>
+  <script src="js/universe.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/kids.js"></script>
+  <script src="js/contacto.js"></script>
+</body>
+</html>
