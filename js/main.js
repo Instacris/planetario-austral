@@ -12,6 +12,9 @@
 (function () {
   "use strict";
 
+  /* Con JS presente se habilitan los estados ocultos de .reveal (sin JS, todo visible) */
+  document.documentElement.classList.add("js");
+
   const DATOS = window.PLANETARIO_DATA || [];
 
   /* ------------------------------------------------------------

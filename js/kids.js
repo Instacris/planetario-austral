@@ -242,88 +242,64 @@
     pinturaCtx.fillRect(0, 0, lienzoPintura.width, lienzoPintura.height);
   }
 
-  // Dibujo de líneas: cohete despegando + planeta con anillos + estrellas
-  function dibujarLineas() {
-    const c = lineasCtx;
-    c.clearRect(0, 0, 640, 440);
-    c.strokeStyle = "#1f2a44";
-    c.lineWidth = 5;
-    c.lineJoin = "round";
-    c.lineCap = "round";
+  // Plantillas de línea: dibujos reales que los niños pueden colorear.
+  // Se cargan como imagen, se centran con encaje "contain" y su fondo
+  // blanco se vuelve transparente para que la pintura se vea debajo.
+  const PLANTILLAS_COLOREAR = [
+    {
+      url: "img/colorear2.gif",
+      instruccion: "Elige un color y pinta el cohete, el planeta o la galaxia con tu dedo o el mouse.",
+    },
+    {
+      url: "img/colorear1.jpg",
+      instruccion: "Elige un color y pinta cada planeta del sistema solar.",
+    },
+  ];
+  let plantillaActual = 0;
+  const instruccionColorear = document.getElementById("colorear-instruccion");
+  const btnCambiarDibujo = document.getElementById("colorear-cambiar");
 
-    // --- Cohete ---
-    c.beginPath(); // cuerpo con punta redondeada
-    c.moveTo(200, 55);
-    c.quadraticCurveTo(248, 120, 248, 205);
-    c.lineTo(248, 295);
-    c.lineTo(152, 295);
-    c.lineTo(152, 205);
-    c.quadraticCurveTo(152, 120, 200, 55);
-    c.closePath();
-    c.stroke();
+  function cargarPlantilla(indice) {
+    const plantilla = PLANTILLAS_COLOREAR[indice];
+    const imagen = new Image();
+    imagen.onload = () => {
+      const ancho = lienzoLineas.width;
+      const alto = lienzoLineas.height;
+      lineasCtx.clearRect(0, 0, ancho, alto);
 
-    c.beginPath(); // ventana (dos círculos)
-    c.arc(200, 175, 26, 0, Math.PI * 2);
-    c.stroke();
-    c.beginPath();
-    c.arc(200, 175, 15, 0, Math.PI * 2);
-    c.stroke();
+      // Encaje "contain" centrado, con un pequeño margen
+      const escala = Math.min(ancho / imagen.width, alto / imagen.height) * 0.94;
+      const w = imagen.width * escala;
+      const h = imagen.height * escala;
+      lineasCtx.drawImage(imagen, (ancho - w) / 2, (alto - h) / 2, w, h);
 
-    c.beginPath(); // aleta izquierda
-    c.moveTo(152, 230);
-    c.lineTo(108, 305);
-    c.lineTo(152, 295);
-    c.closePath();
-    c.stroke();
-
-    c.beginPath(); // aleta derecha
-    c.moveTo(248, 230);
-    c.lineTo(292, 305);
-    c.lineTo(248, 295);
-    c.closePath();
-    c.stroke();
-
-    c.beginPath(); // llama del motor
-    c.moveTo(170, 295);
-    c.quadraticCurveTo(178, 340, 200, 375);
-    c.quadraticCurveTo(222, 340, 230, 295);
-    c.stroke();
-
-    // --- Planeta con anillo ---
-    c.beginPath();
-    c.arc(480, 170, 72, 0, Math.PI * 2);
-    c.stroke();
-    c.beginPath(); // anillo
-    c.ellipse(480, 170, 115, 30, -0.35, 0, Math.PI * 2);
-    c.stroke();
-    c.beginPath(); // cráteres
-    c.arc(455, 145, 12, 0, Math.PI * 2);
-    c.stroke();
-    c.beginPath();
-    c.arc(505, 195, 9, 0, Math.PI * 2);
-    c.stroke();
-
-    // --- Luna creciente ---
-    c.beginPath();
-    c.arc(505, 370, 34, 0.6, Math.PI * 2 - 0.6, false);
-    c.quadraticCurveTo(510, 370, 525, 348);
-    c.stroke();
-
-    // --- Estrellitas de 4 puntas ---
-    const estrellita = (x, y, r) => {
-      c.beginPath();
-      c.moveTo(x, y - r);
-      c.quadraticCurveTo(x, y, x + r, y);
-      c.quadraticCurveTo(x, y, x, y + r);
-      c.quadraticCurveTo(x, y, x - r, y);
-      c.quadraticCurveTo(x, y, x, y - r);
-      c.closePath();
-      c.stroke();
+      // Blanco → transparente (para pintar debajo); trazos oscuros →
+      // azul de marca con opacidad reforzada (para un contorno limpio)
+      const datos = lineasCtx.getImageData(0, 0, ancho, alto);
+      const px = datos.data;
+      for (let i = 0; i < px.length; i += 4) {
+        const luminancia = (px[i] + px[i + 1] + px[i + 2]) / 3;
+        if (luminancia > 235) {
+          px[i + 3] = 0;
+        } else {
+          px[i] = 31;
+          px[i + 1] = 42;
+          px[i + 2] = 68;
+          px[i + 3] = Math.min(255, (255 - luminancia) * 1.7);
+        }
+      }
+      lineasCtx.putImageData(datos, 0, 0);
     };
-    estrellita(80, 90, 16);
-    estrellita(580, 60, 13);
-    estrellita(70, 370, 13);
-    estrellita(340, 45, 10);
+    imagen.src = plantilla.url;
+
+    if (instruccionColorear) instruccionColorear.textContent = plantilla.instruccion;
+  }
+
+  if (btnCambiarDibujo) {
+    btnCambiarDibujo.addEventListener("click", () => {
+      plantillaActual = (plantillaActual + 1) % PLANTILLAS_COLOREAR.length;
+      cargarPlantilla(plantillaActual);
+    });
   }
 
   // Convierte coordenadas del puntero a coordenadas internas del canvas
@@ -375,7 +351,7 @@
   );
 
   prepararLienzo();
-  dibujarLineas();
+  cargarPlantilla(plantillaActual);
 
   /* ------------------------------------------------------------
      4. JUEGO "¡ENCUÉNTRALO!"

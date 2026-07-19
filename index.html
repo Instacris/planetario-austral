@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Planetario Austral — Explora el Universo</title>
+  <title>Planetario Austral · Explora el Universo</title>
   <meta name="description" content="Planetario Austral: contenido educativo verificado (NASA/ESA), zona interactiva para niños y agenda de visitas." />
+  <link rel="icon" type="image/jpeg" href="img/logo.jpg" />
 
   <!-- Tipografías: Space Grotesk (títulos), Inter (texto), Baloo 2 (sección Kids) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,7 +26,10 @@
        ============================================================ -->
   <header class="header">
     <nav class="nav" aria-label="Navegación principal">
-      <a href="#inicio" class="nav__logo">✦ Planetario<span>Austral</span></a>
+      <a href="#inicio" class="nav__logo">
+        <img src="img/logo.jpg" alt="" class="nav__logo-img" />
+        Planetario<span>Austral</span>
+      </a>
 
       <button class="nav__toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
         <span></span><span></span><span></span>
@@ -112,7 +116,7 @@
             </div>
 
             <div class="universo__controles">
-              <span class="universo__etiqueta">✦ Vía Láctea en miniatura — pasa el cursor y haz clic</span>
+              <span class="universo__etiqueta">✦ Vía Láctea en miniatura: pasa el cursor y haz clic</span>
               <button class="btn btn--mini" id="universo-aleatorio">🎲 Objeto aleatorio</button>
             </div>
           </div>
@@ -140,38 +144,22 @@
       <div class="galeria__marco" id="galeria-marco">
         <!-- Slide 1 -->
         <figure class="galeria__slide is-activa">
-          <div class="galeria__placeholder">
-            <span>📷</span>
-            <p>IMAGEN 1 — Domo principal</p>
-            <small>Reemplaza este bloque por tu &lt;img&gt;</small>
-          </div>
+          <img src="img/domo principal.jpg" alt="Interior del domo de proyección del planetario" loading="lazy" />
           <figcaption>El domo de proyección, corazón del planetario</figcaption>
         </figure>
         <!-- Slide 2 -->
         <figure class="galeria__slide">
-          <div class="galeria__placeholder">
-            <span>📷</span>
-            <p>IMAGEN 2 — Sala de exposiciones</p>
-            <small>Reemplaza este bloque por tu &lt;img&gt;</small>
-          </div>
-          <figcaption>Exposiciones interactivas para toda la familia</figcaption>
+          <img src="img/sala de exposicion.jpg" alt="Público observando una nebulosa proyectada en la cúpula" loading="lazy" />
+          <figcaption>Cada sesión te sumerge en la inmensidad del cosmos</figcaption>
         </figure>
         <!-- Slide 3 -->
         <figure class="galeria__slide">
-          <div class="galeria__placeholder">
-            <span>📷</span>
-            <p>IMAGEN 3 — Observación nocturna</p>
-            <small>Reemplaza este bloque por tu &lt;img&gt;</small>
-          </div>
-          <figcaption>Noches de observación con telescopios</figcaption>
+          <img src="img/observacion nocturna.webp" alt="Sala de observación con mapa estelar y constelaciones" loading="lazy" />
+          <figcaption>Constelaciones y mapas estelares en nuestra sala de observación</figcaption>
         </figure>
         <!-- Slide 4 -->
         <figure class="galeria__slide">
-          <div class="galeria__placeholder">
-            <span>📷</span>
-            <p>IMAGEN 4 — Zona Kids</p>
-            <small>Reemplaza este bloque por tu &lt;img&gt;</small>
-          </div>
+          <img src="img/zona kid.jpeg" alt="Juegos temáticos espaciales en la zona infantil" loading="lazy" />
           <figcaption>La zona infantil, ciencia que se juega</figcaption>
         </figure>
 
@@ -292,7 +280,7 @@
             </ul>
           </div>
         </div>
-        <p class="fuente">Fuentes: NASA Science — Solar System (science.nasa.gov) · NASA Space Place</p>
+        <p class="fuente">Fuentes: NASA Science, Solar System (science.nasa.gov) · NASA Space Place</p>
       </article>
 
       <!-- ==================== Módulo: El Sol ==================== -->
@@ -338,7 +326,7 @@
             </p>
           </div>
         </div>
-        <p class="fuente">Fuente: NASA Science — Sun Facts (science.nasa.gov/sun/facts)</p>
+        <p class="fuente">Fuente: NASA Science, Sun Facts (science.nasa.gov/sun/facts)</p>
       </article>
 
       <!-- ==================== Módulo: Estrellas ==================== -->
@@ -399,7 +387,7 @@
             </p>
           </div>
         </div>
-        <p class="fuente">Fuente: NASA Science — Stars (science.nasa.gov/universe/stars)</p>
+        <p class="fuente">Fuente: NASA Science, Stars (science.nasa.gov/universe/stars)</p>
       </article>
 
       <!-- ==================== Módulo: Galaxias ==================== -->
@@ -437,11 +425,11 @@
             <p>
               La mayoría de las grandes galaxias esconde un <strong>agujero negro supermasivo</strong> en su
               centro; algunos alcanzan miles de millones de veces la masa del Sol. El de la Vía Láctea se
-              llama <strong>Sagitario A*</strong> — conócelo en el módulo de agujeros negros.
+              llama <strong>Sagitario A*</strong>: conócelo en el módulo de agujeros negros.
             </p>
           </div>
         </div>
-        <p class="fuente">Fuente: NASA Science — Galaxies (science.nasa.gov/universe/galaxies)</p>
+        <p class="fuente">Fuente: NASA Science, Galaxies (science.nasa.gov/universe/galaxies)</p>
       </article>
 
       <!-- ==================== Módulo: Cometas ==================== -->
@@ -484,7 +472,7 @@
             </p>
           </div>
         </div>
-        <p class="fuente">Fuentes: NASA Science — Comets (science.nasa.gov/solar-system/comets) · ESA — misión Rosetta (esa.int)</p>
+        <p class="fuente">Fuentes: NASA Science, Comets (science.nasa.gov/solar-system/comets) · ESA, misión Rosetta (esa.int)</p>
       </article>
 
       <!-- ==================== Módulo: Agujeros negros ==================== -->
@@ -495,7 +483,7 @@
           <span class="nivel__tag">Nivel 1 · Fundamentos</span>
           <p>
             Un agujero negro es una región donde la gravedad es tan intensa que
-            <strong>nada — ni siquiera la luz — puede escapar</strong> una vez cruzado su límite, llamado
+            <strong>nada, ni siquiera la luz, puede escapar</strong> una vez cruzado su límite, llamado
             <strong>horizonte de sucesos</strong>. Los de masa estelar nacen cuando estrellas muy masivas
             agotan su combustible y explotan como supernovas (NASA).
           </p>
@@ -535,7 +523,7 @@
             </ul>
           </div>
         </div>
-        <p class="fuente">Fuente: NASA Science — Black Holes (science.nasa.gov/universe/black-holes)</p>
+        <p class="fuente">Fuente: NASA Science, Black Holes (science.nasa.gov/universe/black-holes)</p>
       </article>
     </section>
 
@@ -610,7 +598,7 @@
         <!-- Juego de colorear -->
         <div class="kids__bloque reveal" id="kids-colorear">
           <h3 class="kids__subtitulo">🎨 Colorea el espacio</h3>
-          <p class="kids__instruccion">Elige un color y pinta el cohete con tu dedo o el mouse.</p>
+          <p class="kids__instruccion" id="colorear-instruccion">Elige un color y pinta el cohete con tu dedo o el mouse.</p>
 
           <div class="colorear">
             <!-- Paleta de colores seleccionable -->
@@ -631,6 +619,7 @@
               </label>
               <button class="btn-kids btn-kids--secundario" id="colorear-borrador">🧽 Borrador</button>
               <button class="btn-kids btn-kids--secundario" id="colorear-limpiar">🗑️ Empezar de nuevo</button>
+              <button class="btn-kids btn-kids--secundario" id="colorear-cambiar">🔄 Cambiar dibujo</button>
             </div>
           </div>
         </div>
@@ -647,28 +636,16 @@
           -->
           <div class="encuentra" id="encuentra-tablero">
             <button class="encuentra__carta" data-objeto="cometa">
-              <div class="encuentra__placeholder">
-                <span aria-hidden="true">🖼️</span>
-                <p>TU IMAGEN AQUÍ<br /><small>(un cometa)</small></p>
-              </div>
+              <img src="img/cometa.jpg" alt="Un cometa cruzando el espacio con su cola brillante" loading="lazy" />
             </button>
             <button class="encuentra__carta" data-objeto="planeta">
-              <div class="encuentra__placeholder">
-                <span aria-hidden="true">🖼️</span>
-                <p>TU IMAGEN AQUÍ<br /><small>(un planeta)</small></p>
-              </div>
+              <img src="img/planeta.png" alt="El planeta Tierra visto desde el espacio" loading="lazy" />
             </button>
             <button class="encuentra__carta" data-objeto="estrella">
-              <div class="encuentra__placeholder">
-                <span aria-hidden="true">🖼️</span>
-                <p>TU IMAGEN AQUÍ<br /><small>(una estrella)</small></p>
-              </div>
+              <img src="img/estrella.jpg" alt="Una estrella sonriente de dibujos animados" loading="lazy" />
             </button>
             <button class="encuentra__carta" data-objeto="galaxia">
-              <div class="encuentra__placeholder">
-                <span aria-hidden="true">🖼️</span>
-                <p>TU IMAGEN AQUÍ<br /><small>(una galaxia)</small></p>
-              </div>
+              <img src="img/galaxia.jpg" alt="Una galaxia espiral fotografiada por telescopio" loading="lazy" />
             </button>
           </div>
           <p class="quiz__feedback" id="encuentra-feedback" aria-live="assertive"></p>
@@ -750,8 +727,8 @@
           </address>
 
           <ul class="ubicacion__horarios">
-            <li><strong>Mar a Vie:</strong> 10:00 – 18:00</li>
-            <li><strong>Sáb y Dom:</strong> 10:00 – 20:00</li>
+            <li><strong>Mar a Vie:</strong> 10:00 a 18:00</li>
+            <li><strong>Sáb y Dom:</strong> 10:00 a 20:00</li>
             <li><strong>Lunes:</strong> cerrado</li>
           </ul>
 
@@ -778,7 +755,7 @@
        FOOTER
        ============================================================ -->
   <footer class="footer">
-    <p>✦ Planetario Austral — hecho con amor por el cosmos.</p>
+    <p>✦ Planetario Austral, hecho con amor por el cosmos.</p>
     <p class="footer__fuentes">
       Contenido educativo basado en fuentes oficiales:
       <a href="https://science.nasa.gov" target="_blank" rel="noopener">NASA Science</a> ·
